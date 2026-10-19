@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prediction Tool - Tài Xỉu MD5 Pro Live</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              black: '#080911',
+              dark: '#0f1123',
+              card: '#161936',
+              border: '#2a2f58',
+              cyan: '#00f0ff',
+              magenta: '#ff007f',
+              yellow: '#ffea00',
+              purple: '#8b5cf6',
+              green: '#10b981',
+              red: '#ef4444'
+            }
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080911;
+      color: #e2e8f0;
+      font-family: 'Rajdhani', sans-serif;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    /* Glassmorphic Cyber Effects */
+    .cyber-glass {
+      background: rgba(22, 25, 54, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .cyber-glass-magenta {
+      background: rgba(22, 25, 54, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 0, 127, 0.3);
+    }
+
+    /* Glow Effects */
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+    .glow-magenta {
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+    .text-glow-cyan {
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+    }
+    .text-glow-magenta {
+      text-shadow: 0 0 8px rgba(255, 0, 127, 0.8);
+    }
+    .text-glow-yellow {
+      text-shadow: 0 0 8px rgba(255, 234, 0, 0.8);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080911;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a2f58;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f0ff;
+    }
+
+    /* Scanning animation */
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(1000%); }
+    }
+    .scanline-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    .scanline-effect::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.8), transparent);
+      animation: scanline 4s linear infinite;
+    }
+
+    /* Dice styling */
+    .dice {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.35rem;
+      background: #0d1021;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
+    }
+
+    @keyframes pulse-fast {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .animate-pulse-fast {
+      animation: pulse-fast 1.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 md:p-6 text-slate-100">
+
+  <!-- TOP HEADER & CONTROLS -->
+  <header class="w-full max-w-7xl mx-auto mb-6">
+    <div class="cyber-glass rounded-2xl p-4 md:p-5 flex flex-col lg:flex-row justify-between items-center gap-4 scanline-effect">
+      
+      <!-- LOGO & TITLE -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyber-cyan to-cyber-magenta p-0.5 flex items-center justify-center glow-cyan">
+          <div class="w-full h-full bg-cyber-dark rounded-[10px] flex items-center justify-center">
+            <i class="fa-solid font-orbitron text-cyber-cyan text-xl">AI</i>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-white to-cyber-magenta">
+            TAI XIU MD5 <span class="text-xs px-2 py-0.5 rounded bg-cyber-magenta/20 text-cyber-magenta border border-cyber-magenta/40">PRO v4.0</span>
+          </h1>
+          <p class="text-xs text-slate-400 font-medium flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-cyber-green animate-ping"></span>
+            Realtime AI Engine & Cross-Origin Proxy Bypass
+          </p>
+        </div>
+      </div>
+
+      <!-- API SETTINGS & CONTROLS -->
+      <div class="flex flex-wrap items-center gap-2 md:gap-3 w-full lg:w-auto justify-end">
+        
+        <!-- Deployment Guide Button -->
+        <button onclick="openGuideModal()" class="px-3 py-2 rounded-xl bg-cyber-purple/20 border border-cyber-purple/50 text-cyber-purple hover:bg-cyber-purple/30 text-xs font-semibold font-orbitron flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>ĐƯA LÊN WEB</span>
+        </button>
+
+        <!-- Mode Switcher (Local API / Demo) -->
+        <div class="flex items-center bg-cyber-dark p-1 rounded-xl border border-cyber-border text-xs">
+          <button id="btnModeLocal" onclick="setApiMode('local')" class="px-3 py-1.5 rounded-lg transition-all font-semibold font-orbitron">
+            <i class="fa-solid fa-server mr-1"></i> API Live
+          </button>
+          <button id="btnModeDemo" onclick="setApiMode('demo')" class="px-3 py-1.5 rounded-lg transition-all font-semibold font-orbitron">
+            <i class="fa-solid fa-vial mr-1"></i> Demo
+          </button>
+        </div>
+
+        <!-- Sync Controls -->
+        <button id="btnAutoSync" onclick="toggleAutoSync()" class="px-3 py-2 rounded-xl border border-cyber-cyan/40 bg-cyber-cyan/10 hover:bg-cyber-cyan/20 text-cyber-cyan text-xs font-semibold flex items-center gap-2 transition-all">
+          <i class="fa-solid fa-rotate text-sm" id="iconSync"></i>
+          <span id="lblAutoSync">Auto: OFF</span>
+        </button>
+
+        <button onclick="fetchDataManual()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-cyber-cyan to-blue-600 text-slate-900 font-bold text-xs font-orbitron hover:brightness-110 transition-all flex items-center gap-1.5 glow-cyan">
+          <i class="fa-solid fa-bolt"></i> FETCH
+        </button>
+
+        <!-- Config Modal Trigger -->
+        <button onclick="openConfigModal()" class="p-2 rounded-xl bg-cyber-dark border border-cyber-border hover:border-cyber-cyan text-slate-300 hover:text-cyber-cyan transition-all" title="Cấu hình URL API & CORS Proxy">
+          <i class="fa-solid fa-gear text-lg"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="w-full max-w-7xl mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN: AI PREDICTION & LATEST RESULT (5 COLS) -->
+    <div class="lg:col-span-5 flex flex-col gap-6">
+
+      <!-- PREDICTION CARD -->
+      <div class="cyber-glass-magenta rounded-2xl p-5 md:p-6 relative overflow-hidden flex flex-col justify-between shadow-2xl">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-cyber-magenta/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div>
+          <!-- Header Card -->
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-cyber-border/60">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-brain text-cyber-magenta text-xl"></i>
+              <span class="font-orbitron font-bold tracking-wider text-sm text-slate-200">AI DỰ ĐOÁN PHIÊN KẾ TẾP</span>
+            </div>
+            <span id="nextSessionId" class="font-orbitron font-extrabold text-cyber-yellow bg-cyber-yellow/10 px-2.5 py-1 rounded-md border border-cyber-yellow/30 text-xs">
+              Phiên #---
+            </span>
+          </div>
+
+          <!-- Prediction Result Box -->
+          <div id="predictionBox" class="text-center py-4 my-2 rounded-2xl border border-cyber-border bg-cyber-dark/80 relative overflow-hidden">
+            <div class="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Gợi Ý Đặt Cược AI</div>
+            <div id="aiPredictedChoice" class="text-4xl md:text-5xl font-black font-orbitron tracking-widest text-slate-500 my-2">
+              WAITING...
+            </div>
+            <div class="flex justify-center items-center gap-2 my-2">
+              <span class="text-xs text-slate-400">Độ Tin Cậy Algorithm:</span>
+              <span id="aiConfidence" class="font-orbitron font-bold text-cyber-cyan text-base">0%</span>
+            </div>
+
+            <!-- Confidence Bar -->
+            <div class="w-3/4 mx-auto bg-cyber-black rounded-full h-2.5 overflow-hidden p-0.5 border border-cyber-border/50">
+              <div id="confidenceBar" class="bg-gradient-to-r from-cyber-cyan to-cyber-magenta h-full rounded-full transition-all duration-700" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Analysis Detail / Reason -->
+          <div class="mt-4 bg-cyber-dark/50 p-3.5 rounded-xl border border-cyber-border/40 text-xs space-y-2">
+            <div class="flex items-start gap-2">
+              <i class="fa-solid fa-chart-line text-cyber-cyan mt-0.5"></i>
+              <div>
+                <span class="font-bold text-slate-300">Dạng Cầu:</span>
+                <span id="aiPatternText" class="text-cyber-cyan font-semibold ml-1">Đang phân tích dữ liệu...</span>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <i class="fa-solid fa-microchip text-cyber-magenta mt-0.5"></i>
+              <div>
+                <span class="font-bold text-slate-300">Thuật toán Markov:</span>
+                <span id="aiMarkovText" class="text-slate-300 ml-1">Chờ tối thiểu 3 phiên dữ liệu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Status Bar -->
+        <div class="mt-4 pt-3 border-t border-cyber-border/40 flex justify-between items-center text-xs text-slate-400">
+          <span class="flex items-center gap-1.5">
+            <span id="statusIndicator" class="w-2 h-2 rounded-full bg-slate-500"></span>
+            <span id="statusText">Chưa kết nối API</span>
+          </span>
+          <span id="lastUpdateTime" class="font-mono text-[11px] text-slate-500">UTC+7: --:--:--</span>
+        </div>
+      </div>
+
+      <!-- LATEST RESULT DISPLAY CARD -->
+      <div class="cyber-glass rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-cyber-border/60">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-dice text-cyber-cyan text-lg"></i>
+              <span class="font-orbitron font-bold tracking-wider text-sm text-slate-200">KẾT QUẢ VỪA XONG</span>
+            </div>
+            <span id="currentSessionId" class="font-mono text-xs text-slate-400">Phiên: #---</span>
+          </div>
+
+          <!-- Dice & Total Score -->
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 my-2">
+            
+            <!-- Three Dices -->
+            <div class="flex items-center gap-3">
+              <div id="dice1" class="dice text-cyber-cyan border-cyber-cyan/40">?</div>
+              <div id="dice2" class="dice text-cyber-cyan border-cyber-cyan/40">?</div>
+              <div id="dice3" class="dice text-cyber-cyan border-cyber-cyan/40">?</div>
+            </div>
+
+            <!-- Score Badge -->
+            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+              <div class="text-right">
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Tổng Điểm</div>
+                <div id="currentPoint" class="font-orbitron font-extrabold text-2xl text-cyber-yellow">--</div>
+              </div>
+              <div id="currentResultBadge" class="px-5 py-2 rounded-xl font-orbitron font-black text-xl bg-cyber-dark border border-cyber-border text-slate-500 min-w-[90px] text-center shadow-lg">
+                ---
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Stats Mini Summary -->
+        <div class="mt-4 pt-3 border-t border-cyber-border/40 grid grid-cols-3 gap-2 text-center text-xs">
+          <div class="bg-cyber-dark/60 p-2 rounded-lg border border-cyber-border/30">
+            <div class="text-slate-400 text-[10px]">Tỉ lệ Tài</div>
+            <div id="statTaiRatio" class="font-orbitron font-bold text-cyber-magenta mt-0.5">0%</div>
+          </div>
+          <div class="bg-cyber-dark/60 p-2 rounded-lg border border-cyber-border/30">
+            <div class="text-slate-400 text-[10px]">Tỉ lệ Xỉu</div>
+            <div id="statXiuRatio" class="font-orbitron font-bold text-cyber-cyan mt-0.5">0%</div>
+          </div>
+          <div class="bg-cyber-dark/60 p-2 rounded-lg border border-cyber-border/30">
+            <div class="text-slate-400 text-[10px]">Bệt Max</div>
+            <div id="statMaxStreak" class="font-orbitron font-bold text-cyber-yellow mt-0.5">0 Tay</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: GRAPH & HISTORY TABLE (7 COLS) -->
+    <div class="lg:col-span-7 flex flex-col gap-6">
+
+      <!-- TREND CHART CANVAS -->
+      <div class="cyber-glass rounded-2xl p-5 flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-chart-area text-cyber-cyan text-base"></i>
+            <span class="font-orbitron font-bold tracking-wider text-sm text-slate-200">BIỂU ĐỒ SOI CẦU (TỔNG ĐIỂM)</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyber-magenta"></span> Tài (11-18)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyber-cyan"></span> Xỉu (3-10)</span>
+          </div>
+        </div>
+
+        <div class="w-full h-48 md:h-56 relative">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- HISTORY TABLE -->
+      <div class="cyber-glass rounded-2xl p-5 flex-1 flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-list-ol text-cyber-magenta text-base"></i>
+            <span class="font-orbitron font-bold tracking-wider text-sm text-slate-200">LỊCH SỬ PHIÊN GẦN NHẤT</span>
+          </div>
+          <span class="text-xs text-slate-400">Hiển thị <span id="sessionCountText" class="text-cyber-cyan font-bold">0</span> phiên</span>
+        </div>
+
+        <div class="overflow-x-auto max-h-64 overflow-y-auto pr-1">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-cyber-border text-slate-400 font-orbitron uppercase tracking-wider text-[11px] sticky top-0 bg-cyber-card z-10">
+                <th class="py-2 px-3">Mã Phiên</th>
+                <th class="py-2 px-2 text-center">Xúc Xắc</th>
+                <th class="py-2 px-2 text-center">Tổng</th>
+                <th class="py-2 px-3 text-center">Kết Quả</th>
+                <th class="py-2 px-3 text-right">Thời Gian</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody" class="divide-y divide-cyber-border/40 font-medium">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-slate-500 italic">Đang tải dữ liệu phiên...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full max-w-7xl mx-auto mt-6 text-center text-xs text-slate-500 py-3 border-t border-cyber-border/30 flex flex-col sm:flex-row justify-between items-center gap-2">
+    <div>Tool AI Dự Đoán TX MD5 &copy; 2026 - Optimized for Netlify / Render / Vercel</div>
+    <div class="flex items-center gap-4">
+      <span class="text-cyber-cyan"><i class="fa-solid fa-shield-halved mr-1"></i> CORS Proxy Bypass Active</span>
+      <span class="text-cyber-magenta"><i class="fa-solid fa-bolt mr-1"></i> Realtime Sync</span>
+    </div>
+  </footer>
+
+  <!-- MODAL CONFIG SETTINGS -->
+  <div id="configModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="cyber-glass rounded-2xl max-w-md w-full p-6 border border-cyber-cyan/40 shadow-2xl relative">
+      <button onclick="closeConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <i class="fa-solid fa-sliders text-cyber-cyan text-xl"></i>
+        <h3 class="font-orbitron font-bold text-lg text-white">Cấu Hình Kết Nối API & CORS</h3>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">URL Endpoint API:</label>
+          <input type="text" id="inputApiUrl" class="w-full bg-cyber-dark border border-cyber-border rounded-xl px-3 py-2.5 text-cyber-cyan font-mono focus:outline-none focus:border-cyber-cyan" placeholder="http://localhost:3009/api/lcmd5">
+          <p class="text-[11px] text-slate-400 mt-1">
+            Ví dụ Local: <code class="text-cyber-yellow">http://localhost:3009/api/lcmd5</code><br>
+            Hoặc Server Render: <code class="text-cyber-yellow">https://your-api.onrender.com/api/lcmd5</code>
+          </p>
+        </div>
+
+        <!-- CORS Proxy Switcher -->
+        <div class="p-3 bg-cyber-dark/80 rounded-xl border border-cyber-border">
+          <label class="flex items-center justify-between cursor-pointer">
+            <div>
+              <span class="font-bold text-slate-200">Bật Bypass CORS Proxy</span>
+              <p class="text-[10px] text-slate-400">Bắt buộc bật khi Host Web tĩnh (Netlify/Vercel) gọi về API chưa mở CORS.</p>
+            </div>
+            <input type="checkbox" id="chkCorsProxy" class="w-4 h-4 text-cyber-cyan rounded focus:ring-0">
+          </label>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Tần Suất Auto Polling (Giây):</label>
+          <input type="number" id="inputPollingInterval" min="3" max="30" value="6" class="w-full bg-cyber-dark border border-cyber-border rounded-xl px-3 py-2.5 text-white font-mono focus:outline-none focus:border-cyber-cyan">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="closeConfigModal()" class="px-4 py-2 rounded-xl bg-cyber-dark border border-cyber-border text-slate-300 hover:bg-slate-800 font-semibold">Hủy</button>
+        <button onclick="saveConfigSettings()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyber-cyan to-blue-600 text-slate-900 font-bold font-orbitron hover:brightness-110">Lưu Cấu Hình</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DEPLOYMENT GUIDE -->
+  <div id="guideModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="cyber-glass rounded-2xl max-w-2xl w-full p-6 border border-cyber-purple/50 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeGuideModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <i class="fa-solid fa-cloud-arrow-up text-cyber-purple text-2xl"></i>
+        <h3 class="font-orbitron font-bold text-xl text-white">Hướng Dẫn Đưa Tool & API Lên Web Miễn Phí</h3>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+        
+        <!-- Step 1 -->
+        <div class="p-4 bg-cyber-dark/80 rounded-xl border border-cyber-border">
+          <h4 class="font-bold text-cyber-cyan text-sm mb-1"><i class="fa-solid fa-server mr-2"></i>BƯỚC 1: Đưa Backend API Node.js (lcapi.js) Lên Cloud (Render.com)</h4>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300 mt-2">
+            <li>Tạo file <code class="text-cyber-yellow">package.json</code> với lệnh: <code class="bg-black/50 px-1 rounded">npm init -y</code> và cài axios/express: <code class="bg-black/50 px-1 rounded">npm i express axios cors</code>.</li>
+            <li>Trong <code class="text-cyber-yellow">lcapi.js</code>, hãy thêm <code class="text-cyber-cyan">const cors = require('cors'); app.use(cors());</code> và dùng <code class="text-cyber-cyan">process.env.PORT || 3009</code>.</li>
+            <li>Đẩy code lên GitHub cá nhân của bạn.</li>
+            <li>Đăng ký tài khoản miễn phí tại <a href="https://render.com" target="_blank" class="text-cyber-cyan underline">Render.com</a>, chọn <strong>New Web Service</strong>, kết nối repository GitHub vừa tạo.</li>
+            <li>Sau khi deploy xong, Render sẽ cấp cho bạn Link API live (VD: <code class="text-cyber-green">https://my-tx-api.onrender.com/api/lcmd5</code>).</li>
+          </ol>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-4 bg-cyber-dark/80 rounded-xl border border-cyber-border">
+          <h4 class="font-bold text-cyber-magenta text-sm mb-1"><i class="fa-solid fa-globe mr-2"></i>BƯỚC 2: Đưa Giao Diện HTML Lên Web Tĩnh (Netlify / Vercel / GitHub Pages)</h4>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300 mt-2">
+            <li>Lưu code HTML này thành file <code class="text-cyber-yellow">index.html</code>.</li>
+            <li>Truy cập <a href="https://app.netlify.com/drop" target="_blank" class="text-cyber-magenta underline">Netlify Drop</a>.</li>
+            <li>Kéo thả thư mục chứa file <code class="text-cyber-yellow">index.html</code> vào Netlify Drop. Bạn sẽ có ngay trang Web công khai hoàn toàn miễn phí trong 10 giây!</li>
+          </ol>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-4 bg-cyber-dark/80 rounded-xl border border-cyber-border">
+          <h4 class="font-bold text-cyber-yellow text-sm mb-1"><i class="fa-solid fa-plug mr-2"></i>BƯỚC 3: Kết Nối Tool Web Với Backend Live</h4>
+          <p class="text-slate-300 mt-1">
+            Trên Web Tool vừa tạo, mở <strong>Nút Bánh Răng Cài Đặt (Top Right)</strong>, dán Link API từ Render vào ô URL API và bấm <strong>Lưu Cấu Hình</strong>!
+          </p>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <button onclick="closeGuideModal()" class="px-5 py-2 rounded-xl bg-cyber-purple text-white font-bold font-orbitron hover:brightness-110">ĐÃ HỦY / HIỂU RỒI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // System States
+    let apiMode = 'local'; // 'local' or 'demo'
+    let apiUrl = 'http://localhost:3009/api/lcmd5';
+    let useCorsProxy = false;
+    let isAutoSync = false;
+    let syncTimer = null;
+    let pollingInterval = 6000;
+
+    // Data Storage
+    let sessionHistory = [];
+    let trendChartInstance = null;
+
+    // Initial Load
+    window.onload = function() {
+      initChart();
+      setApiMode('local');
+      fetchDataManual();
+    };
+
+    // --- API MODE & CONFIG MANAGEMENT ---
+    function setApiMode(mode) {
+      apiMode = mode;
+      const btnLocal = document.getElementById('btnModeLocal');
+      const btnDemo = document.getElementById('btnModeDemo');
+
+      if (mode === 'local') {
+        btnLocal.className = "px-3 py-1.5 rounded-lg font-semibold font-orbitron bg-cyber-cyan text-slate-900 shadow-md";
+        btnDemo.className = "px-3 py-1.5 rounded-lg font-semibold font-orbitron text-slate-400 hover:text-white";
+        document.getElementById('statusText').innerText = "Đang kết nối API...";
+      } else {
+        btnDemo.className = "px-3 py-1.5 rounded-lg font-semibold font-orbitron bg-cyber-magenta text-white shadow-md";
+        btnLocal.className = "px-3 py-1.5 rounded-lg font-semibold font-orbitron text-slate-400 hover:text-white";
+        document.getElementById('statusText').innerText = "Đang sử dụng dữ liệu Giả Lập Demo";
+      }
+      fetchDataManual();
+    }
+
+    function toggleAutoSync() {
+      isAutoSync = !isAutoSync;
+      const btn = document.getElementById('btnAutoSync');
+      const icon = document.getElementById('iconSync');
+      const lbl = document.getElementById('lblAutoSync');
+
+      if (isAutoSync) {
+        btn.classList.add('bg-cyber-cyan/30', 'border-cyber-cyan');
+        icon.classList.add('fa-spin');
+        lbl.innerText = "Auto: ON";
+        syncTimer = setInterval(fetchDataManual, pollingInterval);
+      } else {
+        btn.classList.remove('bg-cyber-cyan/30', 'border-cyber-cyan');
+        icon.classList.remove('fa-spin');
+        lbl.innerText = "Auto: OFF";
+        if (syncTimer) clearInterval(syncTimer);
+      }
+    }
+
+    function openConfigModal() {
+      document.getElementById('inputApiUrl').value = apiUrl;
+      document.getElementById('chkCorsProxy').checked = useCorsProxy;
+      document.getElementById('inputPollingInterval').value = pollingInterval / 1000;
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+
+    function openGuideModal() {
+      document.getElementById('guideModal').classList.remove('hidden');
+    }
+
+    function closeGuideModal() {
+      document.getElementById('guideModal').classList.add('hidden');
+    }
+
+    function saveConfigSettings() {
+      apiUrl = document.getElementById('inputApiUrl').value.trim() || 'http://localhost:3009/api/lcmd5';
+      useCorsProxy = document.getElementById('chkCorsProxy').checked;
+      const sec = parseInt(document.getElementById('inputPollingInterval').value, 10) || 6;
+      pollingInterval = Math.max(3, sec) * 1000;
+
+      closeConfigModal();
+
+      if (isAutoSync) {
+        clearInterval(syncTimer);
+        syncTimer = setInterval(fetchDataManual, pollingInterval);
+      }
+      fetchDataManual();
+    }
+
+    // --- DATA FETCHING WITH CORS PROXY OPTION ---
+    async function fetchDataManual() {
+      const statusInd = document.getElementById('statusIndicator');
+      const statusTxt = document.getElementById('statusText');
+
+      if (apiMode === 'demo') {
+        generateDemoSession();
+        updateUI();
+        statusInd.className = "w-2 h-2 rounded-full bg-cyber-green";
+        statusTxt.innerText = "Demo Data Synced";
+        return;
+      }
+
+      // Fetch API
+      try {
+        statusInd.className = "w-2 h-2 rounded-full bg-cyber-yellow animate-ping";
+        statusTxt.innerText = "Đang tải API...";
+
+        let finalFetchUrl = apiUrl;
+        if (useCorsProxy) {
+          finalFetchUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+        }
+
+        const response = await fetch(finalFetchUrl, { cache: 'no-cache' });
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+
+        const result = await response.json();
+
+        if (result && result.success && result.data) {
+          processApiData(result.data);
+          statusInd.className = "w-2 h-2 rounded-full bg-cyber-green";
+          statusTxt.innerText = "API Live Connected";
+        } else {
+          throw new Error(result.message || "Không thể lấy dữ liệu API");
+        }
+
+      } catch (err) {
+        console.warn("Lỗi kết nối API:", err.message);
+        statusInd.className = "w-2 h-2 rounded-full bg-cyber-red";
+        statusTxt.innerText = "Lỗi kết nối (Tự động chuyển demo)";
+        
+        generateDemoSession();
+      } finally {
+        updateUI();
+      }
+    }
+
+    function processApiData(data) {
+      const phienId = parseInt(data.phien, 10) || Date.now();
+      const existingIdx = sessionHistory.findIndex(s => s.phien === phienId);
+      
+      const newSession = {
+        phien: phienId,
+        dices: [data.xuc_xac_1, data.xuc_xac_2, data.xuc_xac_3],
+        tong: data.tong,
+        ketQua: (data.ket_qua || (data.tong >= 11 ? 'tai' : 'xiu')).toLowerCase(),
+        thoiGian: data.thoi_gian || new Date().toLocaleTimeString()
+      };
+
+      if (existingIdx !== -1) {
+        sessionHistory[existingIdx] = newSession;
+      } else {
+        sessionHistory.unshift(newSession);
+      }
+
+      if (sessionHistory.length > 50) sessionHistory.pop();
+    }
+
+    function generateDemoSession() {
+      const lastPhien = sessionHistory.length > 0 ? sessionHistory[0].phien + 1 : 2849102;
+      const d1 = Math.floor(Math.random() * 6) + 1;
+      const d2 = Math.floor(Math.random() * 6) + 1;
+      const d3 = Math.floor(Math.random() * 6) + 1;
+      const sum = d1 + d2 + d3;
+      const result = sum >= 11 ? 'tai' : 'xiu';
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} UTC+7`;
+
+      const demoSession = {
+        phien: lastPhien,
+        dices: [d1, d2, d3],
+        tong: sum,
+        ketQua: result,
+        thoiGian: timeStr
+      };
+
+      sessionHistory.unshift(demoSession);
+      if (sessionHistory.length > 50) sessionHistory.pop();
+    }
+
+    // --- UI UPDATE FUNCTIONS ---
+    function updateUI() {
+      if (sessionHistory.length === 0) return;
+
+      const latest = sessionHistory[0];
+
+      // 1. Display Current Session Data
+      document.getElementById('currentSessionId').innerText = `Phiên: #${latest.phien}`;
+      document.getElementById('dice1').innerText = latest.dices[0];
+      document.getElementById('dice2').innerText = latest.dices[1];
+      document.getElementById('dice3').innerText = latest.dices[2];
+      document.getElementById('currentPoint').innerText = latest.tong;
+
+      const badge = document.getElementById('currentResultBadge');
+      if (latest.ketQua === 'tai') {
+        badge.innerText = "TÀI";
+        badge.className = "px-5 py-2 rounded-xl font-orbitron font-black text-xl bg-cyber-magenta/20 text-cyber-magenta border border-cyber-magenta/50 min-w-[90px] text-center shadow-lg text-glow-magenta";
+      } else {
+        badge.innerText = "XỈU";
+        badge.className = "px-5 py-2 rounded-xl font-orbitron font-black text-xl bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/50 min-w-[90px] text-center shadow-lg text-glow-cyan";
+      }
+
+      document.getElementById('lastUpdateTime').innerText = latest.thoiGian;
+
+      // 2. Render History Table
+      renderHistoryTable();
+
+      // 3. Compute Stats
+      calculateStats();
+
+      // 4. Run AI Prediction Engine
+      runAIPrediction();
+
+      // 5. Update Chart
+      updateChartData();
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      document.getElementById('sessionCountText').innerText = sessionHistory.length;
+
+      let html = '';
+      sessionHistory.forEach(s => {
+        const isTai = s.ketQua === 'tai';
+        const badgeColor = isTai 
+          ? 'bg-cyber-magenta/20 text-cyber-magenta border-cyber-magenta/40' 
+          : 'bg-cyber-cyan/20 text-cyber-cyan border-cyber-cyan/40';
+
+        html += `
+          <tr class="hover:bg-cyber-dark/80 transition-colors">
+            <td class="py-2.5 px-3 font-mono text-slate-300">#${s.phien}</td>
+            <td class="py-2.5 px-2 text-center font-mono text-slate-400">[${s.dices.join(', ')}]</td>
+            <td class="py-2.5 px-2 text-center font-bold text-cyber-yellow">${s.tong}</td>
+            <td class="py-2.5 px-3 text-center">
+              <span class="px-2.5 py-0.5 rounded-full border font-orbitron font-bold text-[10px] ${badgeColor}">
+                ${isTai ? 'TÀI' : 'XỈU'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 text-right text-slate-500 font-mono text-[11px]">${s.thoiGian}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function calculateStats() {
+      if (sessionHistory.length === 0) return;
+
+      let taiCount = 0;
+      let xiuCount = 0;
+      let maxStreak = 0;
+      let currentStreak = 0;
+      let lastResult = null;
+
+      sessionHistory.forEach(s => {
+        if (s.ketQua === 'tai') taiCount++;
+        else xiuCount++;
+
+        if (s.ketQua === lastResult) {
+          currentStreak++;
+        } else {
+          currentStreak = 1;
+          lastResult = s.ketQua;
+        }
+
+        if (currentStreak > maxStreak) {
+          maxStreak = currentStreak;
+        }
+      });
+
+      const total = sessionHistory.length;
+      document.getElementById('statTaiRatio').innerText = `${Math.round((taiCount / total) * 100)}%`;
+      document.getElementById('statXiuRatio').innerText = `${Math.round((xiuCount / total) * 100)}%`;
+      document.getElementById('statMaxStreak').innerText = `${maxStreak} Tay`;
+    }
+
+    // --- AI PREDICTION ENGINE ---
+    function runAIPrediction() {
+      if (sessionHistory.length < 3) {
+        document.getElementById('aiPredictedChoice').innerText = "THÊM DỮ LIỆU";
+        document.getElementById('aiConfidence').innerText = "0%";
+        return;
+      }
+
+      const latestSession = sessionHistory[0];
+      const nextSessionNumber = latestSession.phien + 1;
+      document.getElementById('nextSessionId').innerText = `Phiên #${nextSessionNumber}`;
+
+      // Pattern Analysis
+      const results = sessionHistory.map(s => s.ketQua);
+      let patternDesc = "Cầu tự do / Biến động";
+      let patternWeightTai = 50;
+
+      let streak = 1;
+      for (let i = 0; i < results.length - 1; i++) {
+        if (results[i] === results[i + 1]) streak++;
+        else break;
+      }
+
+      const currentSide = results[0];
+
+      if (streak >= 4) {
+        patternDesc = `Cầu Bệt ${currentSide.toUpperCase()} (${streak} tay) - Dự đoán bẻ cầu`;
+        patternWeightTai = currentSide === 'tai' ? 35 : 65;
+      } else if (results[0] !== results[1] && results[1] !== results[2] && results[2] !== results[3]) {
+        patternDesc = "Cầu 1-1 đẹp (Xen kẽ liên tục)";
+        patternWeightTai = currentSide === 'tai' ? 25 : 75;
+      } else if (results.length >= 6 && results[0] === results[1] && results[2] === results[3] && results[0] !== results[2]) {
+        patternDesc = "Cầu 2-2 nhịp nhàng";
+        patternWeightTai = currentSide === 'tai' ? 30 : 70;
+      } else {
+        patternDesc = `Cầu nghiêng nhẹ (${currentSide.toUpperCase()} ${streak} tay)`;
+        patternWeightTai = currentSide === 'tai' ? 55 : 45;
+      }
+
+      // Markov Chain
+      let transFromTai_ToTai = 0, transFromTai_ToXiu = 0;
+      let transFromXiu_ToTai = 0, transFromXiu_ToXiu = 0;
+
+      for (let i = sessionHistory.length - 1; i > 0; i--) {
+        const prev = sessionHistory[i].ketQua;
+        const curr = sessionHistory[i - 1].ketQua;
+
+        if (prev === 'tai') {
+          if (curr === 'tai') transFromTai_ToTai++;
+          else transFromTai_ToXiu++;
+        } else {
+          if (curr === 'tai') transFromXiu_ToTai++;
+          else transFromXiu_ToXiu++;
+        }
+      }
+
+      let markovTaiProb = 50;
+      if (currentSide === 'tai') {
+        const totalTaiTrans = transFromTai_ToTai + transFromTai_ToXiu;
+        if (totalTaiTrans > 0) markovTaiProb = (transFromTai_ToTai / totalTaiTrans) * 100;
+      } else {
+        const totalXiuTrans = transFromXiu_ToTai + transFromXiu_ToXiu;
+        if (totalXiuTrans > 0) markovTaiProb = (transFromXiu_ToTai / totalXiuTrans) * 100;
+      }
+
+      const finalTaiProbability = Math.round((patternWeightTai * 0.6) + (markovTaiProb * 0.4));
+      const finalChoice = finalTaiProbability >= 50 ? 'TÀI' : 'XỈU';
+      const confidence = finalTaiProbability >= 50 ? finalTaiProbability : (100 - finalTaiProbability);
+
+      const choiceEl = document.getElementById('aiPredictedChoice');
+      choiceEl.innerText = finalChoice;
+
+      if (finalChoice === 'TÀI') {
+        choiceEl.className = "text-4xl md:text-5xl font-black font-orbitron tracking-widest text-cyber-magenta my-2 text-glow-magenta";
+      } else {
+        choiceEl.className = "text-4xl md:text-5xl font-black font-orbitron tracking-widest text-cyber-cyan my-2 text-glow-cyan";
+      }
+
+      document.getElementById('aiConfidence').innerText = `${confidence}%`;
+      document.getElementById('confidenceBar').style.width = `${confidence}%`;
+
+      document.getElementById('aiPatternText').innerText = patternDesc;
+      document.getElementById('aiMarkovText').innerText = `Xác suất chuyển trạng thái từ ${currentSide.toUpperCase()}: ${Math.round(markovTaiProb)}% sang Tài`;
+    }
+
+    // --- CHART RENDER ---
+    function initChart() {
+      const ctx = document.getElementById('trendChart').getContext('2d');
+      trendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Tổng Điểm',
+            data: [],
+            borderColor: '#00f0ff',
+            backgroundColor: 'rgba(0, 240, 255, 0.1)',
+            borderWidth: 2,
+            pointBackgroundColor: [],
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  return ` Tổng điểm: ${val} (${val >= 11 ? 'Tài' : 'Xỉu'})`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: 3,
+              max: 18,
+              grid: { color: 'rgba(42, 47, 88, 0.5)' },
+              ticks: { color: '#94a3b8', font: { family: 'Orbitron' } }
+            },
+            x: {
+              grid: { color: 'rgba(42, 47, 88, 0.2)' },
+              ticks: { color: '#94a3b8', font: { family: 'Orbitron', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChartData() {
+      if (!trendChartInstance || sessionHistory.length === 0) return;
+
+      const chartSessions = sessionHistory.slice(0, 15).reverse();
+
+      const labels = chartSessions.map(s => `#${String(s.phien).slice(-4)}`);
+      const points = chartSessions.map(s => s.tong);
+      const pointColors = chartSessions.map(s => s.ketQua === 'tai' ? '#ff007f' : '#00f0ff');
+
+      trendChartInstance.data.labels = labels;
+      trendChartInstance.data.datasets[0].data = points;
+      trendChartInstance.data.datasets[0].pointBackgroundColor = pointColors;
+      trendChartInstance.update();
+    }
+  </script>
+</body>
+</html>
